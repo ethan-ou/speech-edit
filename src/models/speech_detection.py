@@ -5,6 +5,12 @@ from pathlib import Path
 
 class SpeechDetection:
     def __init__(self, batch_size=16, threshold=0.15, model="ami", device="cuda"):
+        if batch_size is None:
+            batch_size = 16
+        
+        if threshold is None:
+            threshold = 0.15
+
         self.batch_size = batch_size
         self.threshold = threshold
         self.model = model

@@ -24,7 +24,8 @@ def handle_folder(folder_path):
     resolve_path=True, dir_okay=True))
 @click.option( '-o', '--out', required=True, type=click.Path(exists=False,
                 resolve_path=True, dir_okay=False))
-def main(files, out):
+@click.option('-t', '--threshold', type=float)
+def main(files, out, threshold):
 
     out_files = []
     for file_path in list(files):
@@ -36,8 +37,8 @@ def main(files, out):
     analyse_clips = Analysis(out_files).summary()
     output_timeline = Timeline().create_timeline(settings=analyse_clips)
 
-    speech_detector = SpeechDetection(batch_size=8)
-    speech_detector_cpu = SpeechDetection(batch_size=8, device="cpu")
+    speech_detector = SpeechDetection(batch_size=8, threshold=threshold)
+    speech_detector_cpu = SpeechDetection(batch_size=8, device="cpu", threshold=threshold)
     output_file = open(out, 'w+')
 
     for i, file_path in enumerate(out_files):
