@@ -25,7 +25,6 @@ def handle_folder(folder_path):
 @click.option( '-o', '--out', required=True, type=click.Path(exists=False,
                 resolve_path=True, dir_okay=False))
 def main(files, out):
-    output_file = open(out, 'w+')
 
     out_files = []
     for file_path in list(files):
@@ -39,6 +38,7 @@ def main(files, out):
 
     speech_detector = SpeechDetection(batch_size=8)
     speech_detector_cpu = SpeechDetection(batch_size=8, device="cpu")
+    output_file = open(out, 'w+')
 
     for i, file_path in enumerate(out_files):
 
@@ -62,12 +62,13 @@ def main(files, out):
                     break
                 except Exception as e:
                     pass
-            
+        
         output_timeline.add_file(file_path, speech)
-
+        output_file.seek(0)
+        output_file.truncate()
+        output_file.write(output_timeline.export())
         temp_dir.cleanup()
-
-    output_file.write(output_timeline.export())
+    
     output_file.close()
 
 # pylint: disable=no-value-for-parameter
