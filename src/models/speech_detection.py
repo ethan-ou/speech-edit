@@ -4,7 +4,7 @@ from pyannote.audio.features.wrapper import Wrapper
 from pathlib import Path
 
 class SpeechDetection:
-    def __init__(self, batch_size=16, threshold=0.15, model="ami", device="cuda"):
+    def __init__(self, batch_size=16, threshold=0.15, model="ami", device="cuda", progress_hook=None):
         if batch_size is None:
             batch_size = 16
         
@@ -15,6 +15,7 @@ class SpeechDetection:
         self.threshold = threshold
         self.model = model
         self.device = device
+        self.progress_hook = progress_hook
 
         SAD_AMI_PATH = 'sad_ami/train/ami.train/weights/0140.pt'
         SAD_DIHARD_PATH = 'sad_dihard/train/dihard.train/weights/0231.pt'
@@ -27,7 +28,7 @@ class SpeechDetection:
             model = SAD_AMI_PATH
 
         self.pipeline = Wrapper(Path(Path(__file__).resolve().parent).joinpath(model), 
-                    batch_size=self.batch_size, device=self.device)
+                    batch_size=self.batch_size, device=self.device, progress_hook=self.progress_hook)
 
     def run(self, file_path):
         diarization = self.pipeline({'audio': file_path})

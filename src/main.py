@@ -13,7 +13,7 @@ torch.backends.cudnn.benchmark=True
 torch.backends.cudnn.deterministic=True
 
 def handle_folder(folder_path):
-    ACCEPTED_EXTENSIONS = ['.mp4', '.m4v', '.mov', '.avi', '.mpeg', '.webm', '.wmv', '.flv', '.mpg', '.mxf']
+    ACCEPTED_EXTENSIONS = ['.mp4', '.m4v', '.mov', '.avi', '.mpeg', '.webm', '.wmv', '.flv', '.mpg', '.mxf', '.mts']
 
     folder = Path(folder_path).glob('**/*')
     files = [Path(x).as_posix() for x in folder if x.is_file() and Path(x).suffix.lower() in ACCEPTED_EXTENSIONS]
