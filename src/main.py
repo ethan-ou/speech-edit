@@ -7,6 +7,7 @@ from pathlib import Path
 from time import sleep
 import click
 import torch
+import sys
 
 torch.backends.cudnn.benchmark=True
 torch.backends.cudnn.deterministic=True
@@ -18,6 +19,18 @@ def handle_folder(folder_path):
     files = [Path(x).as_posix() for x in folder if x.is_file() and Path(x).suffix.lower() in ACCEPTED_EXTENSIONS]
 
     return files
+
+def progress(count, total):
+    bar_len = 60
+    filled_len = int(round(bar_len * count / float(total)))
+    percents = round(100.0 * count / float(total), 1)
+    bar = '=' * filled_len + '-' * (bar_len - filled_len)
+    status = 'Detecting Speech'
+
+    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
+    sys.stdout.flush()
+
+    # print(f'{(curr_batch_index / num_batches) * 100}\r', end="")
 
 @click.command()
 @click.argument('files', nargs=-1, type=click.Path(exists=True, readable=True,
@@ -37,8 +50,8 @@ def main(files, out, threshold):
     analyse_clips = Analysis(out_files).summary()
     output_timeline = Timeline().create_timeline(settings=analyse_clips)
 
-    speech_detector = SpeechDetection(batch_size=8, threshold=threshold)
-    speech_detector_cpu = SpeechDetection(batch_size=8, device="cpu", threshold=threshold)
+    speech_detector = SpeechDetection(batch_size=8, threshold=threshold, progress_hook=progress)
+    speech_detector_cpu = SpeechDetection(batch_size=8, device="cpu", threshold=threshold, progress_hook=progress)
     output_file = open(out, 'w+')
 
     for i, file_path in enumerate(out_files):
